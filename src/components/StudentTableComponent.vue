@@ -10,7 +10,8 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-500">
-                        Showing all students
+                        Sorted by: <span class="font-medium text-gray-700 capitalize">{{ currentSort }} ({{
+                            currentSortDir }})</span>
                     </div>
                 </div>
             </div>
@@ -24,37 +25,108 @@
                             class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
                             <div class="flex items-center">
                                 ID
-                                <svg class="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-                                </svg>
                             </div>
                         </th>
                         <th
                             class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
                             Student Info
                         </th>
-                        <th
-                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
-                            Math
+
+                        <th @click="sort('math')"
+                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group select-none">
+                            <div class="flex items-center gap-1">
+                                Math
+                                <div class="flex flex-col">
+                                    <svg class="w-2.5 h-2.5" :class="getIconClass('math', 'asc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                    <svg class="w-2.5 h-2.5 -mt-0.5" :class="getIconClass('math', 'desc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
-                        <th
-                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
-                            Physics
+
+                        <th @click="sort('physics')"
+                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group select-none">
+                            <div class="flex items-center gap-1">
+                                Physics
+                                <div class="flex flex-col">
+                                    <svg class="w-2.5 h-2.5" :class="getIconClass('physics', 'asc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                    <svg class="w-2.5 h-2.5 -mt-0.5" :class="getIconClass('physics', 'desc')"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
-                        <th
-                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
-                            English
+
+                        <th @click="sort('english')"
+                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group select-none">
+                            <div class="flex items-center gap-1">
+                                English
+                                <div class="flex flex-col">
+                                    <svg class="w-2.5 h-2.5" :class="getIconClass('english', 'asc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                    <svg class="w-2.5 h-2.5 -mt-0.5" :class="getIconClass('english', 'desc')"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
-                        <th
-                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
-                            Average Score
+
+                        <th @click="sort('average')"
+                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group select-none">
+                            <div class="flex items-center gap-1">
+                                Average Score
+                                <div class="flex flex-col">
+                                    <svg class="w-2.5 h-2.5" :class="getIconClass('average', 'asc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                    <svg class="w-2.5 h-2.5 -mt-0.5" :class="getIconClass('average', 'desc')"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
-                        <th
-                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
-                            Ranking
+
+                        <th @click="sort('rank')"
+                            class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors group select-none">
+                            <div class="flex items-center gap-1">
+                                Ranking
+                                <div class="flex flex-col">
+                                    <svg class="w-2.5 h-2.5" :class="getIconClass('rank', 'asc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                    <svg class="w-2.5 h-2.5 -mt-0.5" :class="getIconClass('rank', 'desc')" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                         </th>
+
                         <th
                             class="py-4 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50">
                             Actions
@@ -62,7 +134,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    <tr v-for="student in students" :key="student.id"
+                    <tr v-for="student in sortedStudents" :key="student.id"
                         class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="py-5 px-6">
                             <div class="flex items-center">
@@ -146,7 +218,7 @@
                         </td>
                     </tr>
 
-                    <tr v-if="students.length === 0">
+                    <tr v-if="sortedStudents.length === 0">
                         <td colspan="8" class="py-16 text-center">
                             <div class="max-w-md mx-auto">
                                 <div class="text-gray-400 mb-6">
@@ -158,8 +230,8 @@
                                             d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
                                     </svg>
                                 </div>
-                                <p class="text-2xl font-medium text-gray-500 mb-2">No students yet</p>
-                                <p class="text-gray-400">Add your first student using the form</p>
+                                <p class="text-2xl font-medium text-gray-500 mb-2">No students found</p>
+                                <p class="text-gray-400">Try adjusting your sort or add a new student</p>
                             </div>
                         </td>
                     </tr>
@@ -185,7 +257,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue'
+import { defineProps, computed, ref } from 'vue' // Added ref
 
 const props = defineProps({
     students: {
@@ -197,7 +269,66 @@ const props = defineProps({
 
 const emit = defineEmits(['edit-student', 'delete-student'])
 
-// Computed properties for table
+// --- Sorting State ---
+// Default: Descending by Average Score
+const currentSort = ref('average')
+const currentSortDir = ref('desc')
+
+// --- Sorting Logic ---
+const sort = (s) => {
+    // If clicking the same column, toggle direction
+    if (s === currentSort.value) {
+        currentSortDir.value = currentSortDir.value === 'asc' ? 'desc' : 'asc'
+    } else {
+        // If clicking a new column, set it and default to desc (usually better for scores)
+        currentSort.value = s
+        currentSortDir.value = 'desc'
+    }
+}
+
+const sortedStudents = computed(() => {
+    return [...props.students].sort((a, b) => {
+        let modifier = 1
+        if (currentSortDir.value === 'desc') modifier = -1
+
+        let valA, valB
+
+        // Handle calculated fields vs raw fields
+        if (currentSort.value === 'average' || currentSort.value === 'rank') {
+            // Rank sorting is mathematically identical to Average sorting
+            // High Average = High Rank (A)
+            valA = calculateAverage(a)
+            valB = calculateAverage(b)
+        } else {
+            // Raw scores (math, physics, english)
+            valA = Number(a[currentSort.value])
+            valB = Number(b[currentSort.value])
+        }
+
+        if (valA < valB) return -1 * modifier
+        if (valA > valB) return 1 * modifier
+        return 0
+    })
+})
+
+// --- UI Helper for Icons ---
+const getIconClass = (column, direction) => {
+    // If this column is NOT the active sort, show both (opacity reduced for inactive feel)
+    if (currentSort.value !== column) {
+        return 'text-gray-300'
+    }
+
+    // If this IS the active sort column
+    if (currentSortDir.value === direction) {
+        // Show active icon in bold color
+        return 'text-gray-700'
+    } else {
+        // Hide the inactive direction icon completely
+        return 'hidden'
+    }
+}
+
+// --- Existing Computed Properties ---
 const highestAverage = computed(() => {
     if (props.students.length === 0) return '0.0'
     const averages = props.students.map(calculateAverage)
@@ -229,7 +360,7 @@ const overallClassColor = computed(() => {
     return 'bg-red-100 text-red-800'
 })
 
-// Methods
+// --- Existing Methods ---
 const handleEdit = (student) => {
     emit('edit-student', student)
 }
@@ -247,14 +378,6 @@ const calculateAverage = (student) => {
     const e = Number(student.english) || 0
     return (m + p + e) / 3
 }
-
-// const getScoreGrade = (score) => {
-//     if (score >= 90) return 'A'
-//     if (score >= 80) return 'B'
-//     if (score >= 70) return 'C'
-//     if (score >= 60) return 'D'
-//     return 'F'
-// }
 
 const getGrade = (student) => {
     const avg = calculateAverage(student)
@@ -302,5 +425,10 @@ tr {
 tr:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Prevent text selection when clicking headers rapidly */
+.select-none {
+    user-select: none;
 }
 </style>
