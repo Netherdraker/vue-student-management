@@ -5,8 +5,20 @@
                 <div>
                     <h2 class="text-xl font-bold text-gray-800">Student Records</h2>
                     <p class="text-sm text-gray-600 mt-1">
-                        {{ students.length }} student{{ students.length !== 1 ? 's' : '' }} found
+                        {{ sortedStudents.length }} student{{ sortedStudents.length !== 1 ? 's' : '' }} found
                     </p>
+                </div>
+
+                <div class="relative grow max-w-md mx-auto md:mx-4">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input v-model="searchQuery" type="text"
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                        placeholder="Search by Name or ID..." />
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-500">
@@ -231,7 +243,7 @@
                                     </svg>
                                 </div>
                                 <p class="text-2xl font-medium text-gray-500 mb-2">No students found</p>
-                                <p class="text-gray-400">Try adjusting your sort or add a new student</p>
+                                <p class="text-gray-400">Try adjusting your search or sort</p>
                             </div>
                         </td>
                     </tr>
@@ -257,7 +269,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed, ref } from 'vue' // Added ref
+import { defineProps, computed, ref } from 'vue'
 
 const props = defineProps({
     students: {
@@ -269,38 +281,52 @@ const props = defineProps({
 
 const emit = defineEmits(['edit-student', 'delete-student'])
 
+// --- Search State ---
+const searchQuery = ref('')
+
 // --- Sorting State ---
-// Default: Descending by Average Score
 const currentSort = ref('average')
 const currentSortDir = ref('desc')
 
-// --- Sorting Logic ---
+// --- Sorting & Filtering Logic ---
 const sort = (s) => {
-    // If clicking the same column, toggle direction
     if (s === currentSort.value) {
         currentSortDir.value = currentSortDir.value === 'asc' ? 'desc' : 'asc'
     } else {
-        // If clicking a new column, set it and default to desc (usually better for scores)
         currentSort.value = s
         currentSortDir.value = 'desc'
     }
 }
 
 const sortedStudents = computed(() => {
-    return [...props.students].sort((a, b) => {
+    // 1. Filter first
+    let result = props.students
+
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase()
+        result = result.filter(student => {
+            const fullName = `${student.firstName} ${student.lastName}`.toLowerCase()
+            // Check ID as displayed in the table (STU + padded ID)
+            const displayId = `stu${student.id.toString().padStart(4, '0')}`
+
+            // Allow searching by raw ID number as well
+            return fullName.includes(query) ||
+                displayId.includes(query) ||
+                student.id.toString().includes(query)
+        })
+    }
+
+    // 2. Sort the filtered results
+    return result.sort((a, b) => {
         let modifier = 1
         if (currentSortDir.value === 'desc') modifier = -1
 
         let valA, valB
 
-        // Handle calculated fields vs raw fields
         if (currentSort.value === 'average' || currentSort.value === 'rank') {
-            // Rank sorting is mathematically identical to Average sorting
-            // High Average = High Rank (A)
             valA = calculateAverage(a)
             valB = calculateAverage(b)
         } else {
-            // Raw scores (math, physics, english)
             valA = Number(a[currentSort.value])
             valB = Number(b[currentSort.value])
         }
@@ -311,24 +337,18 @@ const sortedStudents = computed(() => {
     })
 })
 
-// --- UI Helper for Icons ---
 const getIconClass = (column, direction) => {
-    // If this column is NOT the active sort, show both (opacity reduced for inactive feel)
     if (currentSort.value !== column) {
         return 'text-gray-300'
     }
-
-    // If this IS the active sort column
     if (currentSortDir.value === direction) {
-        // Show active icon in bold color
         return 'text-gray-700'
     } else {
-        // Hide the inactive direction icon completely
         return 'hidden'
     }
 }
 
-// --- Existing Computed Properties ---
+// --- Computed Properties ---
 const highestAverage = computed(() => {
     if (props.students.length === 0) return '0.0'
     const averages = props.students.map(calculateAverage)
@@ -360,7 +380,7 @@ const overallClassColor = computed(() => {
     return 'bg-red-100 text-red-800'
 })
 
-// --- Existing Methods ---
+// --- Methods ---
 const handleEdit = (student) => {
     emit('edit-student', student)
 }
@@ -372,7 +392,6 @@ const handleDelete = (id) => {
 }
 
 const calculateAverage = (student) => {
-    // Ensure numbers are treated as numbers
     const m = Number(student.math) || 0
     const p = Number(student.physics) || 0
     const e = Number(student.english) || 0
@@ -427,7 +446,6 @@ tr:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Prevent text selection when clicking headers rapidly */
 .select-none {
     user-select: none;
 }
